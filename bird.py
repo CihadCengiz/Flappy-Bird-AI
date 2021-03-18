@@ -5,19 +5,22 @@ import random
 import os
 pygame.font.init()
 
-
+#Window size
 WIN_WIDTH = 288
 WIN_HEIGHT = 512
 
 GEN = 0
 
+#Load images
 BIRD_IMGS = [(pygame.image.load(os.path.join('imgs', 'bird1.png'))), (pygame.image.load(os.path.join('imgs', 'bird2.png'))), (pygame.image.load(os.path.join('imgs', 'bird3.png')))]
 PIPE_IMG = (pygame.image.load(os.path.join('imgs', 'pipe.png')))
 BASE_IMG = (pygame.image.load(os.path.join('imgs', 'base.png')))
 BG_IMG = (pygame.image.load(os.path.join('imgs', 'bg.png')))
 
+#Font
 STAT_FONT = pygame.font.SysFont("comicsans", 25)
 
+#Bird funcs
 class Bird:
     IMGS = BIRD_IMGS
     MAX_ROTATION = 25
@@ -25,7 +28,6 @@ class Bird:
     ANIMATION_TIME = 5
     
     def __init__(self, x, y):
-        
         self.x = x
         self.y = y
         self.tilt = 0
@@ -85,6 +87,7 @@ class Bird:
             self.img = self.IMGS[1]
             self.img_count = self.ANIMATION_TIME*2
             
+        #Rotate bird image and draw (jump & fall)
         rotated_image = pygame.transform.rotate(self.img, self.tilt)
         new_rect = rotated_image.get_rect(center=self.img.get_rect(topleft = (self.x, self.y)).center)
         win.blit(rotated_image, new_rect.topleft)
@@ -93,6 +96,7 @@ class Bird:
     def get_mask(self):
         return pygame.mask.from_surface(self.img)
 
+#Obstacles
 class Pipe:
     GAP = 80
     VEL = 5
@@ -136,7 +140,8 @@ class Pipe:
             return True
         
         return False
-    
+
+#Background    
 class Base:
     VEL = 5
     WIDTH = BASE_IMG.get_width()
@@ -179,6 +184,7 @@ def draw_window(win, birds, pipes, base, score, gen):
         bird.draw(win)
     pygame.display.update()
     
+#Main func
 def main(genomes, config):
     global GEN
     GEN += 1
@@ -244,11 +250,6 @@ def main(genomes, config):
                     nets.pop(x)
                     ge.pop(x)
                     
-                    
-            
-        
-            
-            
                 if not pipe.passed and pipe.x < bird.x:
                     pipe.passed = True
                     add_pipe = True
@@ -275,11 +276,7 @@ def main(genomes, config):
                 ge.pop(x)
         
         base.move()
-        draw_window(win, birds, pipes, base, score, GEN)
-        
-      
-        
-        
+        draw_window(win, birds, pipes, base, score, GEN)    
         
 def run(config_path):
     config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
@@ -293,7 +290,6 @@ def run(config_path):
     
     winner = p.run(main, 50)
     
-
 if __name__ == "__main__":
     local_dir = os.path.dirname(__file__)
     config_path = os.path.join(local_dir, "config-feedforward.txt")
